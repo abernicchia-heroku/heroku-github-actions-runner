@@ -97,4 +97,5 @@ attachRunner
 ./bin/runsvc.sh &
 wait $!
 
+echo "Calling detachRunner..."
 detachRunner
