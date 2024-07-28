@@ -27,6 +27,9 @@ getRegistrationToken() {
   GITHUB_REG_TOKEN=$(curl --silent -X POST -H "Authorization: token ${GITHUB_ACCESS_TOKEN}" "${GITHUB_REG_TOKEN_URL}" | jq .token --raw-output)
 }
 
+# software update is managed via schedule or manually. If you use ephemeral runners in containers then this can lead to repeated software updates when a new runner version is released. 
+# Turning off automatic updates allows you to update the runner version on the container image directly on your own schedule.
+# see https://docs.github.com/en/actions/hosting-your-own-runners/managing-self-hosted-runners/autoscaling-with-self-hosted-runners#controlling-runner-software-updates-on-self-hosted-runners
 attachRunner() {
   echo "Attaching runner..."
   getRegistrationToken
@@ -34,7 +37,8 @@ attachRunner() {
     --unattended \
     --token "${GITHUB_REG_TOKEN}" \
     --url "https://github.com/${GITHUB_ORGANIZATION}" \
-    --replace
+    --replace \
+    --disableupdate
 }
 
 detachRunner() {
