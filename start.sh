@@ -41,7 +41,6 @@ detachRunner() {
   echo "Removing runner..."
   getRegistrationToken
   ./config.sh remove \
-    --unattended \
     --token "${GITHUB_REG_TOKEN}"
 }
 
