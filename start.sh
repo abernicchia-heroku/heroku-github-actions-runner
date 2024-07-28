@@ -32,7 +32,7 @@ getRegistrationToken() {
 # Turning off automatic updates allows you to update the runner version on the container image directly on your own schedule.
 # see https://docs.github.com/en/actions/hosting-your-own-runners/managing-self-hosted-runners/autoscaling-with-self-hosted-runners#controlling-runner-software-updates-on-self-hosted-runners
 attachRunner() {
-  echo "Attaching runner..."
+  echo "[self-hosted runner] Attaching runner ..."
   getRegistrationToken
   ./config.sh \
     --unattended \
@@ -44,7 +44,7 @@ attachRunner() {
 }
 
 detachRunner() {
-  echo "Removing runner..."
+  echo "[self-hosted runner] Removing runner ..."
   getRegistrationToken
   ./config.sh remove \
     --token "${GITHUB_REG_TOKEN}"
@@ -74,8 +74,8 @@ attachRunner
 # SIGINT has a value of 2, so the exit code is 130 (128+2).
 # SIGTERM has a value of 15, so the exit code is 143 (128+15).
 # https://en.wikipedia.org/wiki/Signal_(IPC)#Default_action
-# trap 'detachRunner' INT
-# trap 'detachRunner' TERM
+trap 'detachRunner; wait $PID' INT
+trap 'detachRunner; wait $PID' TERM
 
 # Normally, bash will ignore any signals while a child process is executing.
 # Starting the server with & (single ampersand) will background it into the
@@ -95,7 +95,7 @@ attachRunner
 # https://github.com/actions/runner/issues/484
 # https://github.com/actions/runner/issues/246
 ./bin/runsvc.sh &
-wait $!
+PID=$!
+wait $PID
 
-echo "Calling detachRunner..."
-detachRunner
+echo "[self-hosted runner] Exiting ..."
