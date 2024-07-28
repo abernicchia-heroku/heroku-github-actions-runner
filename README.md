@@ -128,10 +128,15 @@ Examples:
  Configure a runner non-interactively with three extra labels:
   ./config.sh --unattended --url <url> --token <token> --labels L1,L2,L3;
 ```
-## Credits and Technical Notes
-Credits to the [owner](https://github.com/douglascayers/heroku-github-actions-runner) of the original project that inspired this updated version that:
+
+## Technical Notes
+This new release:
 - uses a new [GitHub Action](abernicchia-heroku/heroku-sources-endpoint-deploy-action) to build and deploy the runner on Heroku using the [sources endpoint API](https://devcenter.heroku.com/articles/build-and-release-using-the-api#sources-endpoint). This action allows you to deploy code living on GitHub repositories, even private, to apps running on Heroku without requiring the [Heroku GitHub integration](https://devcenter.heroku.com/articles/github-integration)
 - uses ephemeral containers to allow [autoscaling](https://docs.github.com/en/actions/hosting-your-own-runners/managing-self-hosted-runners/autoscaling-with-self-hosted-runners#using-ephemeral-runners-for-autoscaling) and [hardening](https://docs.github.com/en/actions/security-guides/security-hardening-for-github-actions#hardening-for-self-hosted-runners) of self-hosted runners. Ephemeral runners are short-lived containers that are executed only once for a single job, providing isolated environments to reduce the risk of data leakage
+- logs the self-runner name to manage it from the GitHub dashboard
 - reduces the Docker image footprint
 - includes all the recent GitHub self-hosted runners features
+
+## Credits
+Credits to the [owner](https://github.com/douglascayers/heroku-github-actions-runner) of the original project that inspired this new updated version.
  
