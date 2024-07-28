@@ -84,7 +84,7 @@ COPY start.sh ${HOME}/start.sh
 RUN chmod ug+x ${HOME}/start.sh \
  && chown -R docker:docker ${HOME}
 
-# Clean up the apt cache (as ./bin/installdependencies.sh above install apt packages) to reduce image size for faster starts.
+# Clean up the apt cache (as ./bin/installdependencies.sh above may install apt packages) to reduce image size for faster starts.
 RUN apt-get autoremove --yes \
  && apt-get clean --yes \
  && rm -rf /var/lib/apt/lists/*
