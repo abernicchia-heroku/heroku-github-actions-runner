@@ -27,7 +27,8 @@ getRegistrationToken() {
   GITHUB_REG_TOKEN=$(curl --silent -X POST -H "Authorization: token ${GITHUB_ACCESS_TOKEN}" "${GITHUB_REG_TOKEN_URL}" | jq .token --raw-output)
 }
 
-# software update is managed via schedule or manually. If you use ephemeral runners in containers then this can lead to repeated software updates when a new runner version is released. 
+# software update is managed via schedule or manually that's the reason --disableupdate is used. 
+# If you use ephemeral runners in containers then this can lead to repeated software updates when a new runner version is released. 
 # Turning off automatic updates allows you to update the runner version on the container image directly on your own schedule.
 # see https://docs.github.com/en/actions/hosting-your-own-runners/managing-self-hosted-runners/autoscaling-with-self-hosted-runners#controlling-runner-software-updates-on-self-hosted-runners
 attachRunner() {
@@ -45,7 +46,8 @@ attachRunner() {
 detachRunner() {
   echo "Removing runner..."
   getRegistrationToken
-  ./config.sh remove \
+  ./config.sh remove 
+  \
     --token "${GITHUB_REG_TOKEN}"
 }
 
@@ -73,8 +75,10 @@ attachRunner
 # SIGINT has a value of 2, so the exit code is 130 (128+2).
 # SIGTERM has a value of 15, so the exit code is 143 (128+15).
 # https://en.wikipedia.org/wiki/Signal_(IPC)#Default_action
-#trap 'detachRunner; exit 130' INT
-#trap 'detachRunner; exit 143' TERM
+# trap 'detachRunner; exit 130' INT
+# trap 'detachRunner; exit 143' TERM
+trap 'detachRunner' INT
+trap 'detachRunner' TERM
 
 # Normally, bash will ignore any signals while a child process is executing.
 # Starting the server with & (single ampersand) will background it into the
