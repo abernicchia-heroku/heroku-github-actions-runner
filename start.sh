@@ -46,8 +46,7 @@ attachRunner() {
 detachRunner() {
   echo "Removing runner..."
   getRegistrationToken
-  ./config.sh remove 
-  \
+  ./config.sh remove \
     --token "${GITHUB_REG_TOKEN}"
 }
 
