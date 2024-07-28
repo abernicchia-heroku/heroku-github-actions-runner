@@ -40,7 +40,7 @@ You will switch between them throughout the following instructions.
     - `GITHUB_ACCESS_TOKEN` with the token you created previously
     - `GITHUB_ORGANIZATION` with the name of your organization
 
-6. From the CLI login as the service/automation to create an API token (SSO users cannot create tokens)
+6. From the Heroku CLI login as the service/automation Heroku user to create an API token (SSO users cannot create tokens)
 
 7. Generate a new Heroku API key
     - `heroku authorizations:create -d "GitHub self-hosted actions automation" --expires-in=<set expiration time in seconds>` setting an adequate expiration time
@@ -79,12 +79,14 @@ GitHub frequently releases updates to the GitHub Action runner package.
 
 If you don't keep the package up-to-date then GitHub won't enqueue jobs.
 
-This project includes a workflow that once a week will rebuild the docker container
-and download the latest updates automatically.
+This project includes a workflow that can be run manually or once a week. It will rebuild the docker container
+and download the latest updates automatically and it will deploy automatically to your Heroku self-hosted runner app.
+
+To take advantage of this automation you need to [fork](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/fork-a-repo) or [mirror](https://docs.github.com/en/repositories/creating-and-managing-repositories/duplicating-a-repository#mirroring-a-repository-in-another-location) this repository to your private organisation's repository and enable workflows run.
 
 ## GitHub Runner Script Usage
 
-The following is how to use the `config.sh` and `run.sh` scripts installed by the runner package.
+The following is how to use the `config.sh` and `run.sh` scripts installed by the runner package (see https://github.com/actions/runner/blob/main/src/Runner.Listener/Runner.cs).
 
 ```
 Commands:
@@ -102,12 +104,16 @@ Config Options:
  --unattended           Disable interactive prompts for missing arguments. Defaults will be used for missing options
  --url string           Repository to add the runner to. Required if unattended
  --token string         Registration token. Required if unattended
- --name string          Name of the runner to configure (default dayers-ltm)
+ --name string          Name of the runner to configure (default hostname on Linux - from C# Environment.MachineName)
  --runnergroup string   Name of the runner group to add this runner to (defaults to the default runner group)
- --labels string        Extra labels in addition to the default: 'self-hosted,OSX,X64'
+ --labels string        Custom labels that will be added to the runner. This option is mandatory if --no-default-labels is used.
+ --no-default-labels    Disables adding the default labels: e.g. 'self-hosted,Linux,X64'
+ --local                Removes the runner config files from your local machine. Used as an option to the remove command
  --work string          Relative runner work directory (default _work)
  --replace              Replace any existing runner with the same name (default false)
- --pat                  GitHub personal access token used for checking network connectivity when executing `./run.sh --check`
+ --pat                  GitHub personal access token with repo scope. Used for checking network connectivity when executing `./run.sh --check`
+ --disableupdate        Disable self-hosted runner automatic update to the latest released version`
+ --ephemeral            Configure the runner to only take one job and then let the service un-configure the runner after the job finishes (default false);
 
 Examples:
  Check GitHub server network connectivity:
@@ -120,5 +126,5 @@ Examples:
   ./config.sh --unattended --url <url> --token <token> --replace [--name <name>]
 
  Configure a runner non-interactively with three extra labels:
-  ./config.sh --unattended --url <url> --token <token> --labels L1,L2,L3
+  ./config.sh --unattended --url <url> --token <token> --labels L1,L2,L3;
 ```

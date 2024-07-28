@@ -33,7 +33,6 @@ getRegistrationToken() {
 # see https://docs.github.com/en/actions/hosting-your-own-runners/managing-self-hosted-runners/autoscaling-with-self-hosted-runners#controlling-runner-software-updates-on-self-hosted-runners
 attachRunner() {
   echo "[self-hosted runner] Attaching runner ..."
-  env
   getRegistrationToken
   ./config.sh \
     --unattended \
@@ -42,6 +41,8 @@ attachRunner() {
     --replace \
     --disableupdate \
     --ephemeral
+  # using the default runner name (--name option is not used) that on Linux defaults to hostname 
+  echo "[self-hosted runner] registerd runner name " $(hostname)
 }
 
 detachRunner() {
