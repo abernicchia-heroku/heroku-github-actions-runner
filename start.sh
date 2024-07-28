@@ -42,7 +42,7 @@ attachRunner() {
     --disableupdate \
     --ephemeral
   # using the default runner name (--name option is not used) that on Linux defaults to hostname 
-  echo "[self-hosted runner] registerd runner name " $(hostname)
+  echo "[self-hosted runner] registerd runner name" $(hostname)
 }
 
 detachRunner() {
