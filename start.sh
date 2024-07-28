@@ -74,10 +74,8 @@ attachRunner
 # SIGINT has a value of 2, so the exit code is 130 (128+2).
 # SIGTERM has a value of 15, so the exit code is 143 (128+15).
 # https://en.wikipedia.org/wiki/Signal_(IPC)#Default_action
-# trap 'detachRunner; exit 130' INT
-# trap 'detachRunner; exit 143' TERM
-trap 'detachRunner' INT
-trap 'detachRunner' TERM
+# trap 'detachRunner' INT
+# trap 'detachRunner' TERM
 
 # Normally, bash will ignore any signals while a child process is executing.
 # Starting the server with & (single ampersand) will background it into the
@@ -98,3 +96,5 @@ trap 'detachRunner' TERM
 # https://github.com/actions/runner/issues/246
 ./bin/runsvc.sh &
 wait $!
+
+detachRunner
