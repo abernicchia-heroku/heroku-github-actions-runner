@@ -38,7 +38,8 @@ attachRunner() {
     --token "${GITHUB_REG_TOKEN}" \
     --url "https://github.com/${GITHUB_ORGANIZATION}" \
     --replace \
-    --disableupdate
+    --disableupdate \
+    --ephemeral
 }
 
 detachRunner() {
