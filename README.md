@@ -55,16 +55,17 @@ You will switch between them throughout the following instructions.
     - https://github.com/organizations/{YOUR_ORGANIZATION}/settings/secrets/actions
     - `HEROKU_API_KEY` with the api key you created previously
 
-10. In GitHub, add an organization variable to store the Heroku self-hosted runner app name
-- https://github.com/organizations/{YOUR_ORGANIZATION}/settings/variables/actions
+10. In GitHub, add an organization/repository variable to store the Heroku self-hosted runner app name
+    - https://github.com/organizations/{YOUR_ORGANIZATION}/settings/variables/actions
+    - https://github.com/{YOUR_ORGANIZATION}/{YOUR_REPOSITORY}/settings/variables/actions
     - `HEROKU_SELFHOSTED_RUNNER_APPNAME` with the name of the Heroku self-hosted runner app
 
 11. Locally, clone and deploy this repository to your Heroku app
 
     ```shell
     git clone https://github.com/abernicchia-heroku/heroku-github-actions-runner.git
-    heroku git:remote --app YOUR_HEROKU_APP
-    heroku apps:stacks:set --app YOUR_HEROKU_APP container
+    heroku git:remote --app HEROKU_SELFHOSTED_RUNNER_APPNAME
+    heroku apps:stacks:set --app HEROKU_SELFHOSTED_RUNNER_APPNAME container
     git push heroku main
     ```
 
