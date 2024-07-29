@@ -17,5 +17,5 @@ jobs:
       - uses: actions/checkout@v4
       - uses: abernicchia-heroku/heroku-sources-endpoint-deploy-action@main
         with:
-          heroku-api-key: ${{secrets.HEROKU_API_KEY}}
-          heroku-app-name: ab-pc-gh-sh-runner # "YOUR APP's NAME" must be unique in Heroku
+          heroku-api-key: ${{secrets.HEROKU_API_KEY}} # set it on GitHub as a secret
+          heroku-app-name: $HEROKU_SELFHOSTED_RUNNER_APPNAME # set it on GitHub as variable

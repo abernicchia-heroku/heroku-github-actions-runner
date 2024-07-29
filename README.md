@@ -51,13 +51,15 @@ You will switch between them throughout the following instructions.
 8. Login as the Heroku administrator and grant the service/automation Heroku user access to **view** and **deploy** to your new app
     - https://dashboard.heroku.com/apps/{YOUR_APP}/access
 
-9. In GitHub, add three organization secrets to store the Heroku information
+9. In GitHub, add an organization secret to store the Heroku information
     - https://github.com/organizations/{YOUR_ORGANIZATION}/settings/secrets/actions
     - `HEROKU_API_KEY` with the api key you created previously
-    - `HEROKU_API_USER` with the username who owns the api key
-    - `HEROKU_ACTIONS_RUNNER_APP` with the name of your new Heroku app
 
-10. Locally, clone and deploy this repository to your Heroku app
+10. In GitHub, add an organization variable to store the Heroku self-hosted runner app name
+- https://github.com/organizations/{YOUR_ORGANIZATION}/settings/variables/actions
+    - `HEROKU_SELFHOSTED_RUNNER_APPNAME` with the name of the Heroku self-hosted runner app
+
+11. Locally, clone and deploy this repository to your Heroku app
 
     ```shell
     git clone https://github.com/abernicchia-heroku/heroku-github-actions-runner.git
@@ -66,7 +68,7 @@ You will switch between them throughout the following instructions.
     git push heroku main
     ```
 
-11. In Heroku, scale your **runner** resource appropriate for your expected usage
+12. In Heroku, scale your **runner** resource appropriate for your expected usage
     - https://dashboard.heroku.com/apps/{YOUR_APP}/resources
     - A single dyno can run one GitHub Actions job at a time
     - Recommended: Private-M dyno type scaled to 4 dynos
@@ -138,7 +140,7 @@ This new release:
 - uses ephemeral containers to allow [autoscaling](https://docs.github.com/en/actions/hosting-your-own-runners/managing-self-hosted-runners/autoscaling-with-self-hosted-runners#using-ephemeral-runners-for-autoscaling) and [hardening](https://docs.github.com/en/actions/security-guides/security-hardening-for-github-actions#hardening-for-self-hosted-runners) of self-hosted runners. Ephemeral runners are short-lived containers that are executed only once for a single job, providing isolated environments to reduce the risk of data leakage
 - logs the self-runner name to manage it from the GitHub dashboard
 - reduces the Docker image footprint
-- includes all the recent GitHub self-hosted runners features
+- includes all the recent GitHub self-hosted runners features and streamlines the configuration and setup
 
 ## Credits
 Credits to the [owner](https://github.com/douglascayers/heroku-github-actions-runner) of the original project that inspired this new updated version.
