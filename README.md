@@ -7,6 +7,8 @@ The runner is hosted on [Heroku as a docker image](https://devcenter.heroku.com/
 The `start.sh` script, inspired by Michael Herman's [tutorial](https://testdriven.io/blog/github-actions-docker/),
 auto registers the newly spun up Heroku dyno as a runner for a GitHub organization.
 
+![GitHub Actions on Heroku](github-actions-on-heroku.jpg)
+
 ## Disclaimer
 The author of this article makes any warranties about the completeness, reliability and accuracy of this information. **Any action you take upon the information of this website is strictly at your own risk**, and the author will not be liable for any losses and damages in connection with the use of the website and the information provided.
 
