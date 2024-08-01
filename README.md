@@ -6,14 +6,14 @@ The runner is hosted on [Heroku as a docker image](https://devcenter.heroku.com/
 
 ## How it works
 
-Once the self-hosted runner is running on Heroku you can start adding workflows to your GitHub repositories (see this [project template](https://github.com/abernicchia-heroku/heroku-github-actions-repo-template) as an example) to automate Heroku Review Apps creation and Heroku Apps deploys using the following actions:
+Once the self-hosted runner is running on Heroku you can start adding workflows to your private GitHub repositories (see this [project template](https://github.com/abernicchia-heroku/heroku-github-actions-repo-template) as an example) to automate Heroku Review Apps creation and Heroku Apps deploys using the following actions:
 - https://github.com/abernicchia-heroku/heroku-review-apps-action
 - https://github.com/abernicchia-heroku/heroku-sources-endpoint-deploy-action
 
 ![GitHub Actions on Heroku](images/github-actions-on-heroku.jpg)
 
-The Heroku self-hosted runner will autoregister with your GitHub Org (1). When git push / pull-request commands are executed toward your private GitHub repository (2) your workflows will trigger the code fetch from your repository (3). 
-The source code will be automatically compressed and uploaded to a temporary Heroku bucket (4) then built and deployed to your apps (5). When a pull request is created a new Review App is created and once it is closed the associated Review App is automatically removed.
+The Heroku self-hosted runner will autoregister with your GitHub Org **(1)**. When git push / pull-request commands are executed toward your private GitHub repository **(2)** your workflows will trigger the code fetch from your repository **(3)**. 
+The source code will be automatically compressed and uploaded to a temporary Heroku bucket **(4)** then built and deployed to your apps **(5)**. When a pull request is created a new Review App is created and once it is closed the associated Review App is automatically removed.
 
 
 ## Disclaimer
