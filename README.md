@@ -4,6 +4,8 @@ This project defines a `Dockerfile` to run a [self-hosted](https://docs.github.c
 
 The runner is hosted on [Heroku as a docker image](https://devcenter.heroku.com/articles/build-docker-images-heroku-yml) via `heroku.yml`.
 
+## How it works
+
 Once the self-hosted runner is running on Heroku you can start adding workflows to your GitHub repositories (see this [project template](https://github.com/abernicchia-heroku/heroku-github-actions-repo-template) as an example) to automate Heroku Review Apps creation and Heroku Apps deploys using the following actions:
 - https://github.com/abernicchia-heroku/heroku-review-apps-action
 - https://github.com/abernicchia-heroku/heroku-sources-endpoint-deploy-action
