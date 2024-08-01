@@ -12,7 +12,7 @@ Once the self-hosted runner is running on Heroku you can start adding workflows 
 
 ![GitHub Actions on Heroku](images/github-actions-on-heroku.jpg)
 
-The Heroku self-hosted runner will autoregister with your GitHub Org **(1)**. When git push / pull-request commands are executed toward your private GitHub repository **(2)** your workflows will trigger the code fetch from your repository **(3)**. 
+The Heroku self-hosted runner will autoregister with your GitHub Org **(1)**. When git push / pull-request commands are executed toward your private GitHub repository **(2)** your workflows will trigger the code fetch from your repository **(3)**.<br/>
 The source code will be automatically compressed and uploaded to a temporary Heroku bucket **(4)** then built and deployed to your apps **(5)**. When a pull request is created a new Review App is created and once it is closed the associated Review App is automatically removed.
 
 
