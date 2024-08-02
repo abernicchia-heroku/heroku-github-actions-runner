@@ -70,7 +70,8 @@ You will switch between them throughout the following instructions.
     - https://github.com/{YOUR_ORGANIZATION}/{YOUR_REPOSITORY}/settings/variables/actions
     - `HEROKU_SELFHOSTED_RUNNER_APPNAME` with the name of the Heroku self-hosted runner app
 
-11. Locally, clone and deploy this repository to your Heroku app
+11. Locally, clone and deploy this repository to your Heroku app or click on the Heroku Button
+    [![Deploy to Heroku](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy)
 
     ```shell
     git clone https://github.com/abernicchia-heroku/heroku-github-actions-runner.git
