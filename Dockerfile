@@ -104,4 +104,6 @@ RUN ${ACTIONS_DIR}/config.sh --version \
 # Set the script to execute when the image starts.
 # Note, even though Docker supports a 'SHELL' setting, Heroku doesn't support it.
 # https://devcenter.heroku.com/articles/container-registry-and-runtime#unsupported-dockerfile-commands
-ENTRYPOINT ["/bin/bash", "-c", "/app/start.sh"]
+#ENTRYPOINT ["/bin/bash", "-c", "/app/start.sh"]
+CMD ["/app/start.sh"]
+
