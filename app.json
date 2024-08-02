@@ -1,7 +1,9 @@
 {
     "name": "heroku-github-actions-runner",
     "description": "Heroku Docker GitHub Actions Runner",
-    "repository": "https://git.soma.salesforce.com/doug-ayers/heroku-github-actions-runner.git",
+    "repository": "https://github.com/abernicchia-heroku/heroku-github-actions-runner.git",
+    "keywords": ["heroku", "github", "actions", "workflow", "self-hosted", "runner", "heroku"],
+    "stack": "container",
     "env": {
         "GITHUB_ORGANIZATION": {
             "required": true,
@@ -14,7 +16,7 @@
     },
     "formation": {
         "runner": {
-            "quantity": 4,
+            "quantity": 1,
             "size": "private-m"
         }
     }
