@@ -25,7 +25,7 @@ The author of this article makes any warranties about the completeness, reliabil
 
 - Administrator access to your GitHub organization
 - Administrator access to your Heroku organization
-- GitHub personal access token with **admin:org** and **repo** scopes
+- GitHub personal access token (classic) with **admin:org** and **repo** scopes or fine-grained token with **"Self-hosted runners" organization permissions (read and write)** (see https://docs.github.com/en/enterprise-cloud@latest/rest/actions/self-hosted-runners?apiVersion=2022-11-28#create-a-registration-token-for-an-organization)
 - Heroku API token from a non-SSO user (service/automation user) with **view** and **deploy** access
 - [Heroku CLI](https://devcenter.heroku.com/articles/heroku-cli)
 - [Git CLI](https://git-scm.com/)
@@ -44,7 +44,7 @@ You will switch between them throughout the following instructions.
 2. In GitHub, add your Heroku Private Space's outbound IP addresses to your organization's allow list (see this [article](https://docs.github.com/en/enterprise-cloud@latest/organizations/keeping-your-organization-secure/managing-security-settings-for-your-organization/managing-allowed-ip-addresses-for-your-organization#adding-an-allowed-ip-address)) and check the **Enable IP allow list** box
     - https://github.com/organizations/{YOUR_ORGANIZATION}/settings/security
 
-3. In GitHub, create a personal access token with **admin:org** and **repo** scopes (see these articles [1](https://docs.github.com/en/enterprise-server@3.9/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#creating-a-personal-access-token), [2](https://docs.github.com/en/rest/actions/self-hosted-runners?apiVersion=2022-11-28#create-a-registration-token-for-an-organization))
+3. In GitHub, create a personal access token with **admin:org** and **repo** scopes (see these articles [1](https://docs.github.com/en/enterprise-server@3.9/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#creating-a-personal-access-token), [2](https://docs.github.com/en/rest/actions/self-hosted-runners?apiVersion=2022-11-28#create-a-registration-token-for-an-organization)) or a fine-grained token with **"Self-hosted runners" organization permissions (read and write)** (see https://github.blog/security/application-security/introducing-fine-grained-personal-access-tokens-for-github/#creating-personal-access-tokens). This token will be used only to configure the runner. Authenticated users must have admin access to the organization. (see https://docs.github.com/en/enterprise-cloud@latest/rest/actions/self-hosted-runners?apiVersion=2022-11-28#create-a-registration-token-for-an-organization). 
     > Don't forget to authorize your access token to SSO to your organization
 
 4. In Heroku, create a new app in your private space
@@ -151,8 +151,10 @@ This new release:
 - uses a new [GitHub Action](abernicchia-heroku/heroku-sources-endpoint-deploy-action) to build and deploy the runner on Heroku using the [sources endpoint API](https://devcenter.heroku.com/articles/build-and-release-using-the-api#sources-endpoint). This action allows you to deploy code living on GitHub repositories, even private, to apps running on Heroku without requiring the [Heroku GitHub integration](https://devcenter.heroku.com/articles/github-integration)
 - uses ephemeral containers to allow [autoscaling](https://docs.github.com/en/actions/hosting-your-own-runners/managing-self-hosted-runners/autoscaling-with-self-hosted-runners#using-ephemeral-runners-for-autoscaling) and [hardening](https://docs.github.com/en/actions/security-guides/security-hardening-for-github-actions#hardening-for-self-hosted-runners) of self-hosted runners. Ephemeral runners are short-lived containers that are executed only once for a single job, providing isolated environments to reduce the risk of data leakage
 - logs the self-runner name to manage it from the GitHub dashboard
-- reduces the Docker image footprint
+- reduces the Docker image footprint and it's possible to run it as one-off dyno (CMD vs. ENTRYPOINT)
 - includes all the recent GitHub self-hosted runners features and streamlines the configuration and setup
+- integrates the [Heroku Button](https://www.heroku.com/elements/buttons) to install the runner in one-click
+- supports fine-grained GitHub tokens
 
 ## Credits
 Credits to the [owner](https://github.com/douglascayers/heroku-github-actions-runner) of the original project that inspired this new updated version.
