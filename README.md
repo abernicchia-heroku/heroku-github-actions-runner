@@ -95,7 +95,7 @@ with your Heroku-hosted runner to do the work just as if you were using GitHub-h
 
 GitHub frequently releases updates to the GitHub Action runner package.
 
-If you don't keep the package up-to-date then GitHub won't enqueue jobs.
+If you don't keep the package up-to-date within 30 days then [GitHub won't enqueue jobs](https://docs.github.com/en/actions/hosting-your-own-runners/managing-self-hosted-runners/autoscaling-with-self-hosted-runners#controlling-runner-software-updates-on-self-hosted-runners).
 
 This project includes a workflow that can be run manually or once a week. It will rebuild the docker container
 and download the latest updates automatically and it will deploy automatically to your Heroku self-hosted runner app.
