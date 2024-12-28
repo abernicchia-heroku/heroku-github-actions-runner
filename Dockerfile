@@ -20,7 +20,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 #
 # Remove /bin/sh and link to bash shell.
 # https://stackoverflow.com/a/46670119/470818
-RUN rm /bin/sh && ln -s /bin/bash /bin/sh
+#RUN rm /bin/sh && ln -s /bin/bash /bin/sh
 
 # Creating Heroku Dyno-like Environment with Docker
 # This makes it more consistent with how Heroku dynos run,
