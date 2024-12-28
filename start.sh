@@ -6,8 +6,11 @@
 # Requests a temporary token to register a GitHub runner.
 # https://docs.github.com/en/rest/reference/actions#create-a-registration-token-for-an-organization
 
-# For security, set these environment variables
-# via Heroku configuration variables.
+# Validating required environment variables
+[[ "${GITHUB_ORGANIZATION}" ]] || { echo "GITHUB_ORGANIZATION is required"; exit 1; }
+[[ "${GITHUB_ACCESS_TOKEN}" ]] || { echo "GITHUB_ACCESS_TOKEN is required"; exit 1; }
+
+# For security, set these environment variables via Heroku configuration variables.
 GITHUB_ORGANIZATION="${GITHUB_ORGANIZATION}" # The GitHub organization to support
 GITHUB_ACCESS_TOKEN="${GITHUB_ACCESS_TOKEN}" # A personal access token with 'admin:org' and 'repo' scopes
 
@@ -40,7 +43,10 @@ attachRunner() {
     --url "https://github.com/${GITHUB_ORGANIZATION}" \
     --replace \
     --disableupdate \
-    --ephemeral
+    --ephemeral \
+    ${GITHUB_RUNNER_LABELS:+--labels "${GITHUB_RUNNER_LABELS}"} \
+    ${GITHUB_RUNNER_GROUP:+--runnergroup "${GITHUB_RUNNER_GROUP}"}
+
   # using the default runner name (--name option is not used) that on Linux defaults to hostname 
   echo "[self-hosted runner] registered runner name" $(hostname)
 }

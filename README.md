@@ -1,18 +1,17 @@
-## GitHub Actions Heroku-hosted Docker Runner
+## Heroku-hosted runner for GitHub Actions
 
-This project defines a `Dockerfile` to run a [self-hosted](https://docs.github.com/en/actions/hosting-your-own-runners/about-self-hosted-runners) Github Actions runner.
+This project defines a `Dockerfile` to run a custom Heroku-hosted runner for Github Actions (see also [self-hosted runners](https://docs.github.com/en/actions/hosting-your-own-runners/about-self-hosted-runners)).
 
 The runner is hosted on [Heroku as a docker image](https://devcenter.heroku.com/articles/build-docker-images-heroku-yml) via `heroku.yml`.
 
 ## How it works
 
-Once the self-hosted runner is running on Heroku you can start adding workflows to your private GitHub repositories (see this [project template](https://github.com/abernicchia-heroku/heroku-github-actions-repo-template) as an example) to automate Heroku Review Apps creation and Heroku Apps deploys using the following actions:
-- https://github.com/abernicchia-heroku/heroku-review-apps-action
-- https://github.com/abernicchia-heroku/heroku-sources-endpoint-deploy-action
+Once the self-hosted runner is running on Heroku you can start adding workflows to your private GitHub repositories (see this [project template](https://github.com/abernicchia-heroku/heroku-github-actions-repo-template) as an example) to automate Heroku Review Apps creation and Heroku Apps deploys using the following action:
+- https://github.com/abernicchia-heroku/heroku-flow-action
 
-![GitHub Actions on Heroku](images/github-actions-on-heroku.jpg)
+![Heroku-hosted runner for Github Actions](images/github-actions-on-heroku.jpg)
 
-The Heroku self-hosted runner will autoregister with your GitHub Org **(1)**. When git push / pull-request commands are executed toward your private GitHub repository **(2)** your workflows will trigger the code fetch from your repository **(3)**.<br/>
+The Heroku-hosted runner will autoregister with your GitHub Org **(1)**. When git push / pull-request commands are executed toward your private GitHub repository **(2)** your workflows will trigger the code fetch from your repository **(3)**.<br/>
 The source code will be automatically compressed and uploaded to a temporary Heroku bucket **(4)** then built and deployed to your apps **(5)**. When a pull request is created a new Review App is created and once it is closed the associated Review App is automatically removed.
 
 
@@ -149,8 +148,9 @@ Examples:
 
 ## Technical Notes
 This new release:
-- uses a new [GitHub Action](abernicchia-heroku/heroku-sources-endpoint-deploy-action) to build and deploy the runner on Heroku using the [sources endpoint API](https://devcenter.heroku.com/articles/build-and-release-using-the-api#sources-endpoint). This action allows you to deploy code living on GitHub repositories, even private, to apps running on Heroku without requiring the [Heroku GitHub integration](https://devcenter.heroku.com/articles/github-integration)
+- uses a new [GitHub Action](abernicchia-heroku/heroku-flow-action) to build and deploy the runner on Heroku using the [sources endpoint API](https://devcenter.heroku.com/articles/build-and-release-using-the-api#sources-endpoint). This action allows you to deploy code living on GitHub repositories, even private, to apps running on Heroku without requiring the [Heroku GitHub integration](https://devcenter.heroku.com/articles/github-integration)
 - uses ephemeral containers to allow [autoscaling](https://docs.github.com/en/actions/hosting-your-own-runners/managing-self-hosted-runners/autoscaling-with-self-hosted-runners#using-ephemeral-runners-for-autoscaling) and [hardening](https://docs.github.com/en/actions/security-guides/security-hardening-for-github-actions#hardening-for-self-hosted-runners) of self-hosted runners. Ephemeral runners are short-lived containers that are executed only once for a single job, providing isolated environments to reduce the risk of data leakage
+- uses a [base image](https://devcenter.heroku.com/articles/stack) that is curated and maintained by Heroku
 - logs the self-runner name to manage it from the GitHub dashboard
 - reduces the Docker image footprint and it's possible to run it as one-off dyno (CMD vs. ENTRYPOINT)
 - includes all the recent GitHub self-hosted runners features and streamlines the configuration and setup

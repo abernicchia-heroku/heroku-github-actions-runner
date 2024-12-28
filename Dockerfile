@@ -1,6 +1,6 @@
 # Use the same image that Heroku apps use.
-# https://devcenter.heroku.com/articles/heroku-22-stack#heroku-22-docker-image
-FROM heroku/heroku:22
+# https://devcenter.heroku.com/articles/stack
+FROM heroku/heroku:24
 
 # ------------------------------------------------------------------------------
 
