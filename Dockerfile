@@ -2,11 +2,11 @@
 # https://devcenter.heroku.com/articles/stack
 FROM heroku/heroku:24
 
-# ------------------------------------------------------------------------------
-
 # Inform utilities that we are in non-interactive mode.
 ARG TERM=linux
 ARG DEBIAN_FRONTEND=noninteractive
+
+USER root
 
 # Switch to bash shell.
 #
@@ -20,7 +20,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 #
 # Remove /bin/sh and link to bash shell.
 # https://stackoverflow.com/a/46670119/470818
-#RUN rm /bin/sh && ln -s /bin/bash /bin/sh
+RUN rm /bin/sh && ln -s /bin/bash /bin/sh
 
 # Creating Heroku Dyno-like Environment with Docker
 # This makes it more consistent with how Heroku dynos run,
