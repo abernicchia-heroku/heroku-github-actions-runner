@@ -48,9 +48,12 @@ You will switch between them throughout the following instructions.
 
 4. In Heroku, create a new app in your private space
 
-5. In Heroku, add two configuration variables to the new app
-    - `GITHUB_ACCESS_TOKEN` with the token you created previously
-    - `GITHUB_ORGANIZATION` with the name of your organization
+5. In Heroku, add the following configuration variables to the new app
+    - `GITHUB_ACCESS_TOKEN` [required] with the token you created previously
+    - `GITHUB_ORGANIZATION` [required] with the name of your organization
+    - `GITHUB_RUNNER_LABELS` [optional] custom labels that will be added to the runner (e.g. L1,L2,L3)
+    - `GITHUB_RUNNER_GROUP` [optional] name of the runner group to add the runner to (see also this [article](https://docs.github.com/en/actions/hosting-your-own-runners/managing-self-hosted-runners/managing-access-to-self-hosted-runners-using-groups#creating-a-self-hosted-runner-group-for-an-organization))
+
 
 6. From the Heroku CLI login as the service/automation Heroku user to create an API token (SSO users cannot create tokens)
 
