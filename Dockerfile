@@ -89,6 +89,12 @@ RUN apt-get autoremove --yes \
  && apt-get clean --yes \
  && rm -rf /var/lib/apt/lists/*
 
+# Security hardening - removes SUID and SGID bits from executable files:
+# - Removes potentially dangerous elevated privileges
+# - Reduces the attack surface
+# - Follows the principle of least privilege
+RUN find / -perm /6000 -type f -exec chmod a-s {} \; || true
+
 # ------------------------------------------------------------------------------
 # Create User
 # ------------------------------------------------------------------------------
