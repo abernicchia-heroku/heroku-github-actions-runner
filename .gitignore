@@ -34,3 +34,8 @@ Thumbs.db
 ehthumbs.db
 [Dd]esktop.ini
 $RECYCLE.BIN/
+
+# Local development
+*.env
+*.dev
+.act
