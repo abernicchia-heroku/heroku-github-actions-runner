@@ -115,7 +115,9 @@ trap 'echo \[self-hosted runner\] received SIGTERM; detachRunner; wait $PID' TER
 # https://github.com/actions/runner/issues/484
 # https://github.com/actions/runner/issues/246
 
-unset_vars()
+# hiding sensitive env vars to the runner
+unset_vars
+
 ./bin/runsvc.sh &
 PID=$!
 wait $PID
