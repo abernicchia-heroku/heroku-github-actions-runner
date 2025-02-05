@@ -21,6 +21,18 @@ GITHUB_REG_TOKEN_URL="https://api.github.com/orgs/${GITHUB_ORGANIZATION}/actions
 
 # -------------------------------------------------------------------
 
+unset_vars() {
+    # List of space separated env vars that has to be hidden to the runner (and workflows) to avoid being logged (leaked) to the GitHub logs
+    # GITHUB_ACCESS_TOKEN is always unset even if GitHub already prevents from being logged in clear text
+    if [[ -n "${HIDDEN_ENV_VARS}" ]]; then
+        for var in "${HIDDEN_ENV_VARS}"; do
+          echo "Unsetting $var"
+          unset "$var"
+        done
+        unset "GITHUB_ACCESS_TOKEN"
+    fi
+}
+
 # Use access token to obtain a short-lived registration token for adding and removing runners.
 # For example, when this container starts up then we need to attach this runner
 # to our GitHub organization. Likewise, when this container shuts down then
@@ -102,6 +114,8 @@ trap 'echo \[self-hosted runner\] received SIGTERM; detachRunner; wait $PID' TER
 # https://github.com/actions/runner/issues/485
 # https://github.com/actions/runner/issues/484
 # https://github.com/actions/runner/issues/246
+
+unset_vars()
 ./bin/runsvc.sh &
 PID=$!
 wait $PID
