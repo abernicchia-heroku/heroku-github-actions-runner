@@ -6,6 +6,10 @@ FROM heroku/heroku:24
 ARG TERM=linux
 ARG DEBIAN_FRONTEND=noninteractive
 
+# this ARG can be overridden changing the heroku.yml, it must be 'latest' or a dot-separated number (e.g. 2.320.1)
+# https://devcenter.heroku.com/articles/build-docker-images-heroku-yml#set-build-time-environment-variables
+ARG RUNNER_VERSION=latest
+
 USER root
 
 # Switch to bash shell.
@@ -61,15 +65,8 @@ RUN useradd -m -d ${HOME} docker \
 WORKDIR ${ACTIONS_DIR}
 
 # Download the latest GitHub Actions runner package.
-# https://github.com/actions/runner/releases
-RUN RUNNER_VERSION=$(curl --silent --show-error --location -H "Accept: application/vnd.github.v3+json" "https://api.github.com/repos/actions/runner/releases/latest" | jq -r '.name') \
-    RUNNER_VERSION=$(if [[ "v" == "${RUNNER_VERSION:0:1}" ]]; then echo "${RUNNER_VERSION:1}"; else echo "${RUNNER_VERSION}"; fi) \
-    RUNNER_OS="linux" \
-    RUNNER_ARCH="x64" \
- && curl --silent --show-error --location "https://github.com/actions/runner/releases/download/v${RUNNER_VERSION}/actions-runner-${RUNNER_OS}-${RUNNER_ARCH}-${RUNNER_VERSION}.tar.gz" | tar -xz \
-    # Install some additional dependencies for the runner.
-    # https://github.com/actions/runner/blob/main/docs/start/envlinux.md#install-net-core-3x-linux-dependencies
- && ./bin/installdependencies.sh
+COPY install-actions-runner.sh /tmp/install-actions-runner.sh
+RUN sh /tmp/install-actions-runner.sh "$RUNNER_VERSION" && rm -f /tmp/install-actions-runner.sh
 
 # ------------------------------------------------------------------------------
 # Copy files and set permissions
