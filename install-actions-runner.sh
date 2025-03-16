@@ -3,7 +3,7 @@
 # Function to validate version input
 validate_version() {
     local input="$1"
-    # Check if input is "latest" or a dot-separated number (e.g., 2.320.1)
+    # Check if input is "latest" or a dot-separated number (e.g. 2.320.1)
     if [[ "$input" == "latest" ]] || [[ "$input" =~ ^[0-9]+(\.[0-9]+)*$ ]]; then
         echo "$input"
     else
