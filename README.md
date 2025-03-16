@@ -100,11 +100,11 @@ GitHub frequently releases updates to the GitHub Action runner package.
 
 If you don't keep the package up-to-date within 30 days then [GitHub won't enqueue jobs](https://docs.github.com/en/actions/hosting-your-own-runners/managing-self-hosted-runners/autoscaling-with-self-hosted-runners#controlling-runner-software-updates-on-self-hosted-runners).
 
-This project includes a workflow that can be run manually or automatically scheduled (e.g. once a week). It will rebuild the docker container and download the latest updates automatically and it will deploy automatically to your Heroku self-hosted runner app.
+This project includes a workflow that can be run manually or automatically scheduled (e.g. once a week). It will rebuild the docker container and download the latest updates and it will deploy to your Heroku self-hosted runner app automatically.
 
 If you need to implement version pinning to avoid potential supply chain vulnerabilities, it's possible to configure a specific runner version (see `RUNNER_VERSION` in heroku.yml). In this case you'll have to modify manually the version and run the above mentioned workflow manually and the scheduled workflow execution can be disabled.
 
-Whenever the runner package is downloaded (either the latest or a specific version) the SHA256 checksum is verified.
+Whenever the runner package is downloaded (either the latest or a specific version) the SHA256 checksum is verified, if the computed checksum does not match with the expected one the build fails.
 
 To take advantage of the above automation you need to [fork](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/fork-a-repo) or [mirror](https://docs.github.com/en/repositories/creating-and-managing-repositories/duplicating-a-repository#mirroring-a-repository-in-another-location) this repository to your private organisation's repository and enable workflows run.
 

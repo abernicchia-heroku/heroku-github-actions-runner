@@ -32,10 +32,11 @@ fi
 
 # Fetch the latest release information
 echo "Fetching latest release information from ${API_URL}..."
-RELEASE_JSON=$(curl --silent --show-error --location -H "Accept: application/vnd.github.v3+json" "${API_URL}")
+RELEASE_JSON=$(curl --silent --show-error --location "${API_URL}")
 
 # Extract the version number
-RUNNER_VERSION=$(echo "${RELEASE_JSON}" | jq -r '.tag_name' | sed 's/^v//')
+# printf is used to parse RELEASE_JSON as it might contain unescaped control characters (like newlines, tabs, ...)
+RUNNER_VERSION=$(printf '%s' "${RELEASE_JSON}" | jq -r '.tag_name' | sed 's/^v//')
 if [ -z "$RUNNER_VERSION" ]; then
     echo "Error: Could not determine the latest version."
     exit 1
@@ -47,7 +48,8 @@ RUNNER_OS="linux"
 RUNNER_ARCH="x64"
 
 ASSET_NAME="actions-runner-${RUNNER_OS}-${RUNNER_ARCH}-${RUNNER_VERSION}.tar.gz"
-ASSET_URL=$(echo "${RELEASE_JSON}" | jq -r --arg name "$ASSET_NAME" '.assets[] | select(.name == $name) | .browser_download_url')
+# printf is used to parse RELEASE_JSON as it might contain unescaped control characters (like newlines, tabs, ...)
+ASSET_URL=$(printf '%s' "${RELEASE_JSON}" | jq -r --arg name "$ASSET_NAME" '.assets[] | select(.name == $name) | .browser_download_url')
 
 if [ -z "$ASSET_URL" ]; then
     echo "Error: Could not find asset ${ASSET_NAME} in the latest release."
@@ -66,11 +68,13 @@ echo "Computed SHA256: ${COMPUTED_SHA256}"
 
 # Extract the SHA256 hash from the release notes
 echo "Extracting SHA256 from release notes..."
-RELEASE_NOTES=$(echo "${RELEASE_JSON}" | jq -r '.body')
-EXPECTED_SHA256=$(echo "${RELEASE_NOTES}" | grep -A 1 "SHA256" | grep "${ASSET_NAME}" | sed 's/.*: //')
+# printf is used to parse RELEASE_JSON as it might contain unescaped control characters (like newlines, tabs, ...)
+RELEASE_NOTES=$(printf '%s' "${RELEASE_JSON}" | jq -r '.body')
+EXPECTED_SHA256=$(echo "${RELEASE_NOTES}" | grep -A 1 "SHA" | grep "${ASSET_NAME}" | awk -F' -->|<!-- END SHA ' '{print $2}')
 
 if [ -z "$EXPECTED_SHA256" ]; then
-    echo "Warning: Could not find SHA256 for ${ASSET_NAME} in release notes."
+    echo "Error: Could not find SHA256 for ${ASSET_NAME} in release notes."
+    exit 1
 else
     echo "Expected SHA256 from release notes: ${EXPECTED_SHA256}"
 
@@ -81,6 +85,7 @@ else
         echo "Verification failed: Computed SHA256 does NOT match the release notes."
         echo "Computed: ${COMPUTED_SHA256}"
         echo "Expected: ${EXPECTED_SHA256}"
+        exit 1
     fi
 fi
 
