@@ -7,7 +7,7 @@ validate_version() {
     if [[ "$input" == "latest" ]] || [[ "$input" =~ ^[0-9]+(\.[0-9]+)*$ ]]; then
         echo "$input"
     else
-        echo "Error: Version must be 'latest' or a dot-separated number (e.g. 2.320.1)."
+        echo "Error: Version must be 'latest' or a dot-separated number (e.g. 2.320.1)"
         exit 1
     fi
 }

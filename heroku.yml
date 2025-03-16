@@ -1,8 +1,8 @@
-# When we push our code to Heroku, rather than buildpacks
-# take over and compile/build our app, we instead tell Heroku
-# to build a Docker image and host that container.
 # https://devcenter.heroku.com/articles/build-docker-images-heroku-yml
+# to configure a specific runner version change the RUNNER_VERSION (e.g. RUNNER_VERSION: 2.320.1), otherwise the latest version available is used by default
 build:
+  config:
+    RUNNER_VERSION: latest
   docker:
     runner: Dockerfile
 
