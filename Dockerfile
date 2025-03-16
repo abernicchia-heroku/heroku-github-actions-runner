@@ -32,7 +32,7 @@ RUN rm /bin/sh && ln -s /bin/bash /bin/sh
 # https://github.com/heroku/stack-images/issues/56#issuecomment-323378577
 # https://github.com/heroku/stack-images/issues/56#issuecomment-348246257
 ARG HOME="/app"
-ENV HOME ${HOME}
+ENV HOME=${HOME}
 WORKDIR ${HOME}
 
 # Paths where we'll install various tools.
