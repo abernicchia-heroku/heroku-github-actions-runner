@@ -167,7 +167,7 @@ This new release:
 ## Security Notes and Recommendations
 Below are summarised some general recommendations to improve security for using GitHub Actions and self-hosted runners, for a complete guide and further details please refer to [Security hardening for GitHub Actions](https://docs.github.com/en/actions/security-for-github-actions/security-guides/security-hardening-for-github-actions):
 - using self-hosted runners with private repositories. This is because forks of your public repository can potentially run dangerous code on your self-hosted runner machine by creating a pull request that executes the code in a workflow
-- disable [Run workflows from fork pull requests](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/enabling-features-for-your-repository/managing-github-actions-settings-for-a-repository#enabling-workflows-for-forks-of-private-repositories) as it could be a potential source of leakage for secrets running in workflows
+- disable [Run workflows from fork pull requests](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/enabling-features-for-your-repository/managing-github-actions-settings-for-a-repository#enabling-workflows-for-forks-of-private-repositories) as it could be a potential source of leakage for secrets running in workflows. This option tells Actions to run workflows from pull requests originating from repository forks. Note that doing so will give maintainers of those forks the ability to use tokens with read permissions on the source repository
 - using only audited actions for specific GitHub Org(s), this can be enforced at GitHub level
 - using “Push rulesets” to block pushes to private/internal repos based on files paths. This can prevent changing the original Workflow or action and inject malicious code
 - configuring a HEROKU_API_KEY at Repo level instead of Org level. This key can be tied to a Heroku user account that has limited permissions to a specific app (the one tied with the repository) limiting the attack area (to others app) in case the HEROKU_API_KEY is being leaked or stolen
@@ -175,7 +175,7 @@ Below are summarised some general recommendations to improve security for using 
 - using dependabot to keep your repositories and Actions up to date. Dependabot can run on GitHub runners [free of charge](https://github.blog/changelog/2024-05-13-dependabot-core-is-now-open-source-with-an-mit-license/)
 - being caution when adding outside collaborators on GitHub — users with read permissions can view logs for workflow failures, view workflow history, as well as search and download logs
 - handling secrets, tokens and keys securely
-- avoid script injections, using an action instead of an inline script
+- avoiding script injections, using an action instead of an inline script
 - isolating the runners from other environments if you want to limit potential access due to software bugs or security issues
 - the amount of sensitive information in the runner environment should be kept to a minimum, always be mindful that any user capable of invoking workflows has access to this environment
 - accessing to logs and/or secrets through forked repositories should be examined
@@ -191,7 +191,13 @@ Below are summarised some general recommendations to improve security for using 
 - evaluating potential impact of a compromised runner (e.g. accessing secrets, exfiltrating data from a runner, stealing the job's GITHUB_TOKEN, modifying the contents of a repository, ...)
 - considering [cross-repository access](https://docs.github.com/en/actions/security-for-github-actions/security-guides/security-hardening-for-github-actions#considering-cross-repository-access)
 - auditing GitHub Actions events
-- using the runner HIDDEN_ENV_VARS to avoid logging sensible application env vars to the GitHub logs
+- using the runner HIDDEN_ENV_VARS to avoid logging sensible runner environment variables to GitHub logs
+- conducting regular security audits of GitHub Actions workflows and Heroku configurations
+- implementing mandatory code reviews for all workflow changes
+- implementing branch protection rules to limit PRs to trusted contributors or specific branches
+- using Heroku's Review Apps feature to isolate test environments from production
+- using Heroku's Config Vars feature with the least privilege principle, only granting access to variables to allowed users
+
 
 ## Limits and Considerations
 - the runner image is not based on the [standard GitHub dockerfile](https://github.com/actions/runner/blob/main/images/Dockerfile) then some Actions might not work as expected

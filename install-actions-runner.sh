@@ -23,7 +23,6 @@ fi
 VERSION_INPUT=$(validate_version "$1")
 
 # Define the GitHub repository and API endpoint
-REPO="actions/runner"
 if [ "$VERSION_INPUT" == "latest" ]; then
     API_URL="https://api.github.com/repos/actions/runner/releases/latest"
 else

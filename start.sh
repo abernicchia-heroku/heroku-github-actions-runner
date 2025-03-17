@@ -6,13 +6,21 @@
 # Requests a temporary token to register a GitHub runner.
 # https://docs.github.com/en/rest/reference/actions#create-a-registration-token-for-an-organization
 
-# Validating required environment variables
-[[ "${GITHUB_ORGANIZATION}" ]] || { echo "GITHUB_ORGANIZATION is required"; exit 1; }
-[[ "${GITHUB_ACCESS_TOKEN}" ]] || { echo "GITHUB_ACCESS_TOKEN is required"; exit 1; }
+# Validating used environment variables to validate values and avoid code injection
 
-# For security, set these environment variables via Heroku configuration variables.
-GITHUB_ORGANIZATION="${GITHUB_ORGANIZATION}" # The GitHub organization to support
-GITHUB_ACCESS_TOKEN="${GITHUB_ACCESS_TOKEN}" # A personal access token with 'admin:org' and 'repo' scopes
+# GitHub organization names can contain alphanumeric characters (a-z, A-Z, 0-9), hyphens (-), underscores (_), periods (.) and must be at least 1 character long and not exceed 60 characters in length
+[[ "${GITHUB_ORGANIZATION}" ]] || { echo "GITHUB_ORGANIZATION is required"; exit 1; }
+[[ "${GITHUB_ORGANIZATION}" =~ ^[A-Za-z0-9_.-]{1,60}$ ]] || { echo "GITHUB_ORGANIZATION contains invalid characters or is longer than 60 characters"; exit 1; }
+
+# GitHub access tokens can contain alphanumeric characters (a-z, A-Z, 0-9), underscores (_)
+[[ "${GITHUB_ACCESS_TOKEN}" ]] || { echo "GITHUB_ACCESS_TOKEN is required"; exit 1; }
+[[ "${GITHUB_ACCESS_TOKEN}" =~ ^[a-zA-Z0-9_]+$ ]] || { echo "GITHUB_ACCESS_TOKEN contains invalid characters"; exit 1; }
+
+# HIDDEN_ENV_VARS must only contain a list of space separated Heroku env vars. Those can contain uppercase letters (A-Z), numbers (0-9), underscores (_)
+# spaces are allowed in the regexpr as those are used as separator for Heroku env vars
+if [[ -n "${HIDDEN_ENV_VARS}" ]]; then
+  [[ "${HIDDEN_ENV_VARS}" =~ ^[A-Z][A-Z0-9_\ ]*$ ]] || { echo "HIDDEN_ENV_VARS contains invalid characters"; exit 1; }
+fi
 
 # Holds short-lived registration token for attaching/detaching self-hosted runners with GitHub Actions framework.
 # This variable is populated at runtime as needed because it does expire after an hour.
@@ -25,7 +33,7 @@ unset_vars() {
     # List of space separated env vars that has to be hidden to the runner (and workflows) to avoid being logged (leaked) to the GitHub logs
     # GITHUB_ACCESS_TOKEN is always unset even if GitHub already prevents from being logged in clear text
     if [[ -n "${HIDDEN_ENV_VARS}" ]]; then
-        for var in "${HIDDEN_ENV_VARS}"; do
+        for var in ${HIDDEN_ENV_VARS}; do
           echo "Unsetting $var"
           unset "$var"
         done
@@ -60,7 +68,7 @@ attachRunner() {
     ${GITHUB_RUNNER_GROUP:+--runnergroup "${GITHUB_RUNNER_GROUP}"}
 
   # using the default runner name (--name option is not used) that on Linux defaults to hostname 
-  echo "[self-hosted runner] registered runner name" $(hostname)
+  echo "[self-hosted runner] registered runner name $(hostname)"
 }
 
 detachRunner() {
@@ -74,7 +82,7 @@ detachRunner() {
 # Our Dockerfile created a user named 'docker' and the following directory is
 # where it installed the GitHub Actions self-hosting runner package.
 # We now navigate to that directory to start the runner.
-cd ${HOME}/actions-runner
+cd "${HOME}"/actions-runner || { echo "error while changing directory to ${HOME}/actions-runner"; exit 1; }
 
 attachRunner
 
