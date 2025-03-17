@@ -15,6 +15,8 @@
 # GitHub access tokens can contain alphanumeric characters (a-z, A-Z, 0-9), underscores (_)
 [[ "${GITHUB_ACCESS_TOKEN}" ]] || { echo "GITHUB_ACCESS_TOKEN is required"; exit 1; }
 [[ "${GITHUB_ACCESS_TOKEN}" =~ ^[a-zA-Z0-9_]+$ ]] || { echo "GITHUB_ACCESS_TOKEN contains invalid characters"; exit 1; }
+# saving it localli before removing the env var (see unset_vars)
+LOCAL_GITHUB_ACCESS_TOKEN="${GITHUB_ACCESS_TOKEN}"
 
 # HIDDEN_ENV_VARS must only contain a list of space separated Heroku env vars. Those can contain uppercase letters (A-Z), numbers (0-9), underscores (_)
 # spaces are allowed in the regexpr as those are used as separator for Heroku env vars
@@ -47,7 +49,7 @@ unset_vars() {
 # we need to remove this runner from our GitHub organization.
 # Runners that are inactive for 30 days are automatically removed by GitHub.
 getRegistrationToken() {
-  GITHUB_REG_TOKEN=$(curl --silent -X POST -H "Authorization: token ${GITHUB_ACCESS_TOKEN}" "${GITHUB_REG_TOKEN_URL}" | jq .token --raw-output)
+  GITHUB_REG_TOKEN=$(curl --silent -X POST -H "Authorization: token ${LOCAL_GITHUB_ACCESS_TOKEN}" "${GITHUB_REG_TOKEN_URL}" | jq .token --raw-output)
 }
 
 # software update is managed via schedule or manually that's the reason --disableupdate is used. 
