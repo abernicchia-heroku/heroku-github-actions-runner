@@ -89,8 +89,6 @@ You will switch between them throughout the following instructions.
     - A single dyno can run one GitHub Actions job at a time
     - Even small dynos are usually enough (e.g. private-S)
 
-Voila!
-
 Now when GitHub Action workflows are launched by your repositories, GitHub will orchestrate
 with your Heroku-hosted runner to do the work just as if you were using GitHub-hosted runners.
 
@@ -102,107 +100,62 @@ If you don't keep the package up-to-date within 30 days then [GitHub won't enque
 
 This project includes a workflow that can be run manually or automatically scheduled (e.g. once a week). It will rebuild the docker container and download the latest updates and it will deploy to your Heroku self-hosted runner app automatically.
 
+To take advantage of the above automation you need to [fork](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/fork-a-repo) or [mirror](https://docs.github.com/en/repositories/creating-and-managing-repositories/duplicating-a-repository#mirroring-a-repository-in-another-location) this repository to your private organisation's repository and enable workflows run.
+
 If you need to implement version pinning to avoid potential supply chain vulnerabilities, it's possible to configure a specific runner version (see `RUNNER_VERSION` in heroku.yml). In this case you'll have to modify manually the version and run the above mentioned workflow manually and the scheduled workflow execution can be disabled.
 
 Whenever the runner package is downloaded (either the latest or a specific version) the SHA256 checksum is verified, if the computed checksum does not match with the expected one the build fails.
 
-To take advantage of the above automation you need to [fork](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/fork-a-repo) or [mirror](https://docs.github.com/en/repositories/creating-and-managing-repositories/duplicating-a-repository#mirroring-a-repository-in-another-location) this repository to your private organisation's repository and enable workflows run.
-
-## GitHub Runner Script Usage
-
-The following is how to use the `config.sh` and `run.sh` scripts installed by the runner package (see https://github.com/actions/runner/blob/main/src/Runner.Listener/Runner.cs).
-
-```
-Commands:
- ./config.sh         Configures the runner
- ./config.sh remove  Unconfigures the runner
- ./run.sh            Runs the runner interactively. Does not require any options.
-
-Options:
- --help     Prints the help for each command
- --version  Prints the runner version
- --commit   Prints the runner commit
- --check    Check the runner's network connectivity with GitHub server
-
-Config Options:
- --unattended           Disable interactive prompts for missing arguments. Defaults will be used for missing options
- --url string           Repository to add the runner to. Required if unattended
- --token string         Registration token. Required if unattended
- --name string          Name of the runner to configure (default hostname on Linux - from C# Environment.MachineName)
- --runnergroup string   Name of the runner group to add this runner to (defaults to the default runner group)
- --labels string        Custom labels that will be added to the runner. This option is mandatory if --no-default-labels is used.
- --no-default-labels    Disables adding the default labels: e.g. 'self-hosted,Linux,X64'
- --local                Removes the runner config files from your local machine. Used as an option to the remove command
- --work string          Relative runner work directory (default _work)
- --replace              Replace any existing runner with the same name (default false)
- --pat                  GitHub personal access token with repo scope. Used for checking network connectivity when executing `./run.sh --check`
- --disableupdate        Disable self-hosted runner automatic update to the latest released version`
- --ephemeral            Configure the runner to only take one job and then let the service un-configure the runner after the job finishes (default false);
-
-Examples:
- Check GitHub server network connectivity:
-  ./run.sh --check --url <url> --pat <pat>
-
- Configure a runner non-interactively:
-  ./config.sh --unattended --url <url> --token <token>
-
- Configure a runner non-interactively, replacing any existing runner with the same name:
-  ./config.sh --unattended --url <url> --token <token> --replace [--name <name>]
-
- Configure a runner non-interactively with three extra labels:
-  ./config.sh --unattended --url <url> --token <token> --labels L1,L2,L3;
-```
-
 ## Technical Notes
 This new release:
-- uses https://github.com/heroku-reference-apps/github-heroku-flow-action GitHub Action to build and deploy the runner on Heroku and update it on schedule or manually
-- uses ephemeral containers to allow [autoscaling](https://docs.github.com/en/actions/hosting-your-own-runners/managing-self-hosted-runners/autoscaling-with-self-hosted-runners#using-ephemeral-runners-for-autoscaling) and [hardening](https://docs.github.com/en/actions/security-guides/security-hardening-for-github-actions#hardening-for-self-hosted-runners) of self-hosted runners. Ephemeral runners are short-lived containers that are executed only once for a single job, providing isolated environments to reduce the risk of data leakage
-- uses a [base image](https://devcenter.heroku.com/articles/stack) that is curated and maintained by Heroku
-- logs the self-runner name to manage it from the GitHub dashboard
-- reduces the Docker image footprint and it's possible to run it as one-off dyno
-- includes all the recent GitHub self-hosted runners features (e.g. labels, groups, ...) and streamlines the configuration and setup
-- integrates the [Heroku Button](https://www.heroku.com/elements/buttons) to install the runner in one-click
-- supports fine-grained GitHub tokens for granular permission control
+- Uses https://github.com/heroku-reference-apps/github-heroku-flow-action GitHub Action to build and deploy the runner on Heroku and update it on schedule or manually
+- Uses ephemeral compute to allow [autoscaling](https://docs.github.com/en/actions/hosting-your-own-runners/managing-self-hosted-runners/autoscaling-with-self-hosted-runners#using-ephemeral-runners-for-autoscaling) and [hardening](https://docs.github.com/en/actions/security-guides/security-hardening-for-github-actions#hardening-for-self-hosted-runners) of self-hosted runners. Ephemeral runners are short-lived containers that are executed only once for a single job, providing isolated environments to reduce the risk of data leakage
+- Uses a [base image](https://devcenter.heroku.com/articles/stack) that is curated and maintained by Heroku
+- Logs the self-runner name to manage it from the GitHub dashboard
+- Reduces the Docker image footprint and it's possible to run it as one-off dyn
+- Includes all the recent GitHub self-hosted runners features (e.g. labels, groups, ...) and streamlines the configuration and setup
+- Integrates the [Heroku Button](https://www.heroku.com/elements/buttons) to install the runner in one-click
+- Supports fine-grained GitHub tokens for granular permission control
 
 ## Security Notes and Recommendations
 Below are summarised some general recommendations to improve security for using GitHub Actions and self-hosted runners, for a complete guide and further details please refer to [Security hardening for GitHub Actions](https://docs.github.com/en/actions/security-for-github-actions/security-guides/security-hardening-for-github-actions):
-- using self-hosted runners with private repositories. This is because forks of your public repository can potentially run dangerous code on your self-hosted runner machine by creating a pull request that executes the code in a workflow
-- disable [Run workflows from fork pull requests](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/enabling-features-for-your-repository/managing-github-actions-settings-for-a-repository#enabling-workflows-for-forks-of-private-repositories) as it could be a potential source of leakage for secrets running in workflows. This option tells Actions to run workflows from pull requests originating from repository forks. Note that doing so will give maintainers of those forks the ability to use tokens with read permissions on the source repository
-- using only audited actions for specific GitHub Org(s), this can be enforced at GitHub level
-- using “Push rulesets” to block pushes to private/internal repos based on files paths. This can prevent changing the original Workflow or action and inject malicious code
-- configuring a HEROKU_API_KEY at Repo level instead of Org level. This key can be tied to a Heroku user account that has limited permissions to a specific app (the one tied with the repository) limiting the attack area (to others app) in case the HEROKU_API_KEY is being leaked or stolen
-- using Runner Groups to [restrict runners to specific repos](https://docs.github.com/en/actions/hosting-your-own-runners/managing-self-hosted-runners/managing-access-to-self-hosted-runners-using-groups#changing-which-repositories-can-access-a-runner-group)
-- using dependabot to keep your repositories and Actions up to date. Dependabot can run on GitHub runners [free of charge](https://github.blog/changelog/2024-05-13-dependabot-core-is-now-open-source-with-an-mit-license/)
-- being caution when adding outside collaborators on GitHub — users with read permissions can view logs for workflow failures, view workflow history, as well as search and download logs
-- handling secrets, tokens and keys securely
-- avoiding script injections, using an action instead of an inline script
-- isolating the runners from other environments if you want to limit potential access due to software bugs or security issues
-- the amount of sensitive information in the runner environment should be kept to a minimum, always be mindful that any user capable of invoking workflows has access to this environment
-- accessing to logs and/or secrets through forked repositories should be examined
-- auditing and rotating registered secrets
-- consider requiring review for access to secrets
-- using [CODEOWNERS](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners) to monitor repository changes
-- using [workflow templates](https://docs.github.com/en/actions/writing-workflows/using-workflow-templates) for code scanning
-- restricting permissions for tokens / permissions for the GITHUB_TOKEN
-- restricting [default permissions](https://docs.github.com/en/actions/security-for-github-actions/security-guides/automatic-token-authentication) granted to GITHUB_TOKEN when running workflows (e.g. Read repository contents and package permissions)
-- using third-party Actions: pin actions to a full length commit SHA, audit the source code, pin actions to a tag only if you trust the creator
-- prevent GitHub Actions from creating or approving pull requests
-- using [OpenSSF Scorecards](https://docs.github.com/en/actions/security-for-github-actions/security-guides/security-hardening-for-github-actions#using-openssf-scorecards-to-secure-workflow-dependencies) to secure workflows
-- evaluating potential impact of a compromised runner (e.g. accessing secrets, exfiltrating data from a runner, stealing the job's GITHUB_TOKEN, modifying the contents of a repository, ...)
-- considering [cross-repository access](https://docs.github.com/en/actions/security-for-github-actions/security-guides/security-hardening-for-github-actions#considering-cross-repository-access)
-- auditing GitHub Actions events
-- using the runner HIDDEN_ENV_VARS to avoid logging sensible runner environment variables to GitHub logs
-- conducting regular security audits of GitHub Actions workflows and Heroku configurations
-- implementing mandatory code reviews for all workflow changes
-- implementing branch protection rules to limit PRs to trusted contributors or specific branches
-- using Heroku's Review Apps feature to isolate test environments from production
-- using Heroku's Config Vars feature with the least privilege principle, only granting access to variables to allowed users
+- Using self-hosted runners with private repositories. This is because forks of your public repository can potentially run dangerous code on your self-hosted runner machine by creating a pull request that executes the code in a workflow
+- Disable [Run workflows from fork pull requests](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/enabling-features-for-your-repository/managing-github-actions-settings-for-a-repository#enabling-workflows-for-forks-of-private-repositories) as it could be a potential source of leakage for secrets running in workflows. This option tells Actions to run workflows from pull requests originating from repository forks. Note that doing so will give maintainers of those forks the ability to use tokens with read permissions on the source repository
+- Using only audited actions for specific GitHub Org(s), this can be enforced at GitHub level through [policies](https://docs.github.com/en/enterprise-cloud@latest/admin/enforcing-policies/enforcing-policies-for-your-enterprise/enforcing-policies-for-github-actions-in-your-enterprise#enforcing-policies)
+- Using [Push rulesets](https://docs.github.com/en/enterprise-cloud@latest/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/about-rulesets#push-rulesets) to block pushes to private/internal repos based on files paths. This can prevent changing the original Workflow or action and inject malicious code
+- Configuring a HEROKU_API_KEY at Repo level instead of Org level. This key can be tied to a Heroku user account that has limited permissions to a specific app (the one tied with the repository) limiting the attack area (to others app) in case the HEROKU_API_KEY is being leaked or stolen
+- Using Runner Groups to [restrict runners to specific repos](https://docs.github.com/en/actions/hosting-your-own-runners/managing-self-hosted-runners/managing-access-to-self-hosted-runners-using-groups#changing-which-repositories-can-access-a-runner-group)
+- Using dependabot to keep your repositories and Actions up to date. Dependabot can run on GitHub runners [free of charge](https://github.blog/changelog/2024-05-13-dependabot-core-is-now-open-source-with-an-mit-license/)
+- Being cautious when adding outside collaborators on GitHub — users with read permissions can view logs for workflow failures, view workflow history, as well as search and download logs
+- Handling secrets, tokens and keys securely (e.g. using secrets in [GitHub Actions](https://docs.github.com/en/actions/security-for-github-actions/security-guides/using-secrets-in-github-actions))
+- Avoiding script injections, using an action instead of an inline script
+- Isolating the runners from other environments if you want to limit potential access due to software bugs or security issues
+- The amount of sensitive information in the runner environment should be kept to a minimum, always be mindful that any user capable of invoking workflows has access to this environment
+- Accessing to logs and/or secrets through forked repositories should be examined
+- Auditing and rotating registered secrets
+- Consider requiring review for access to secrets
+- Using [CODEOWNERS](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners) to monitor repository changes
+- Using [workflow templates](https://docs.github.com/en/actions/writing-workflows/using-workflow-templates) for code scanning
+- Restricting permissions for tokens / permissions for the GITHUB_TOKEN
+- Restricting [default permissions](https://docs.github.com/en/actions/security-for-github-actions/security-guides/automatic-token-authentication) granted to GITHUB_TOKEN when running workflows (e.g. Read repository contents and package permissions)
+- Using third-party Actions: pin actions to a full length commit SHA, audit the source code, pin actions to a tag only if you trust the creator
+- Prevent GitHub Actions from creating or approving pull requests
+- Using [OpenSSF Scorecards](https://docs.github.com/en/actions/security-for-github-actions/security-guides/security-hardening-for-github-actions#using-openssf-scorecards-to-secure-workflow-dependencies) to secure workflows
+- Evaluating potential impact of a compromised runner (e.g. accessing secrets, exfiltrating data from a runner, stealing the job's GITHUB_TOKEN, modifying the contents of a repository, ...)
+- Considering [cross-repository access](https://docs.github.com/en/actions/security-for-github-actions/security-guides/security-hardening-for-github-actions#considering-cross-repository-access)
+- Auditing GitHub Actions events
+- Using the runner HIDDEN_ENV_VARS to avoid logging sensible runner environment variables to GitHub logs
+- Conducting regular security audits of GitHub Actions workflows and Heroku configurations
+- Implementing mandatory code reviews for all workflow changes
+- Implementing branch protection rules to limit PRs to trusted contributors or specific branches
+- Using Heroku's Review Apps feature to isolate test environments from production
+- Using Heroku's Config Vars feature with the least privilege principle, only granting access to variables to allowed users
 
 
 ## Limits and Considerations
-- the runner image is not based on the [standard GitHub dockerfile](https://github.com/actions/runner/blob/main/images/Dockerfile) then some Actions might not work as expected
-- currently, it's not possible to run GitHub Actions requiring docker/rootless-docker as they need higher privileges that are not allowed on Heroku dynos for security reasons
-- the runner cannot be executed on [Fir](https://devcenter.heroku.com/changelog-items/3071) yet, requiring an ARM based image
+- As the runner image is not based on the [standard GitHub dockerfile](https://github.com/actions/runner/blob/main/images/Dockerfile) then some Actions might not work as expected
+- Currently, it's not possible to run GitHub Actions requiring docker/rootless-docker as they need higher privileges that are not allowed on Heroku dynos for security reasons
+- The runner cannot be executed on [Fir](https://devcenter.heroku.com/changelog-items/3071) yet, requiring an ARM based image
 
 
 ## Credits
